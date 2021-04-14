@@ -29,7 +29,8 @@ public class QueryingDAO {
      */
     public int count() {
         String sql = "select count(*) from customers";
-        return 0;
+        int count = this.jdbcTemplate.queryForObject(sql, Integer.class);
+        return count;
     }
 
     /**
@@ -37,7 +38,8 @@ public class QueryingDAO {
      */
     public String getLastName(Long id) {
         String sql = "select last_name from customers where id = ?";
-        return null;
+        String lastName = this.jdbcTemplate.queryForObject(sql, String.class, id);
+        return lastName;
     }
 
     /**
@@ -45,7 +47,15 @@ public class QueryingDAO {
      */
     public Customer findCustomerById(Long id) {
         String sql = "select id, first_name, last_name from customers where id = ?";
-        return null;
+        Customer customer = jdbcTemplate.queryForObject(
+                    sql, (resultSet, rowNum) -> {
+                        String firstName = resultSet.getString("first_name");
+                        String lastName = resultSet.getString("last_name");
+                        Customer newCustomer = new Customer(id, firstName, lastName);
+                        return newCustomer;
+                    },
+                    id);
+        return customer;
     }
 
     /**
@@ -53,7 +63,15 @@ public class QueryingDAO {
      */
     public List<Customer> findAllCustomers() {
         String sql = "select id, first_name, last_name from customers";
-        return null;
+        List<Customer> customers = this.jdbcTemplate.query(
+                    sql, (resultSet, rowNum) -> {
+                        Long id = resultSet.getLong("id");
+                        String firstName = resultSet.getString("first_name");
+                        String lastName = resultSet.getString("last_name");
+                        Customer newCustomer = new Customer(id, firstName, lastName);
+                        return newCustomer;
+                    });
+        return customers;
     }
 
     /**
