@@ -5,6 +5,7 @@ import nextstep.helloworld.application.AuthorizationException;
 import nextstep.helloworld.dto.MemberResponse;
 import nextstep.helloworld.dto.TokenRequest;
 import nextstep.helloworld.dto.TokenResponse;
+import nextstep.helloworld.infrastructure.AuthorizationExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,7 +93,7 @@ public class AuthController {
     @GetMapping("/members/you")
     public ResponseEntity findYourInfo(HttpServletRequest request) {
         // TODO: authorization 헤더의 Bearer 값을 추출하기
-        String token = request.getHeader("authorization").substring(6);
+        String token = AuthorizationExtractor.extract(request);
         MemberResponse member = authService.findMemberByToken(token);
         return ResponseEntity.ok().body(member);
     }
